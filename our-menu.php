@@ -26,7 +26,7 @@ $cartCount = array_sum($_SESSION['cart'] ?? []);
 </nav>
 
 <div class="container mt-4">
-    <h2 class="text-center mb-4">Opps I make Mistake</h2>
+    <h2 class="text-center mb-4">Our Food Menu</h2>
     <div class="row">
 
 <?php
