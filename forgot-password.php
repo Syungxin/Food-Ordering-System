@@ -1,123 +1,108 @@
 <?php
 session_start();
 include_once('includes/dbconnection.php');
-if(isset($_POST['changesubmit']))
-  {
-    $contactno=$_POST['contactno'];
-    $email=$_POST['email'];
 
-        $query=mysqli_query($con,"select ID from tbluser where  Email='$email' and MobileNumber='$contactno'");
-    $ret=mysqli_fetch_array($query);
-    if($ret>0){
-      $_SESSION['contactno']=$contactno;
-      $_SESSION['email']=$email;
-     header('location:reset-password.php');
-    }
-    else{
-echo "<script>alert('Invalid Details. Please try again');</script>";
-      echo "<script>window.location.href='forgot-password.php'</script>";
+$error = "";
+
+if (isset($_POST['submit'])) {
+    $username = trim($_POST['username']);
+
+    $check = mysqli_query(
+        $conn,
+        "SELECT ID FROM users WHERE Username='$username'"
+    );
+
+    if (mysqli_num_rows($check) == 1) {
+        $_SESSION['reset_username'] = $username;
+        header("Location: reset-password.php");
+        exit();
+    } else {
+        $error = "Username not found";
     }
 }
-
 ?>
+
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="" />
-    <meta name="keywords" content="" />
-    <title>Food Ordering System | Password Recovery</title>
-    <link rel="stylesheet" href="assets/css/icons.min.css">
-    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/css/main.css">
-    <link rel="stylesheet" href="assets/css/red-color.css">
-    <link rel="stylesheet" href="assets/css/yellow-color.css">
-    <link rel="stylesheet" href="assets/css/responsive.css">
+    <title>Forgot Password</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .card {
+            background: white;
+            width: 350px;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        h2 { margin-bottom: 10px; }
+        p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover { background: #218838; }
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .back {
+            margin-top: 15px;
+        }
+        .back a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 14px;
+        }
+    </style>
 </head>
-<body itemscope>
-<?php include_once('includes/header.php');?>
+<body>
 
-        <section>
-            <div class="block">
-                <div class="fixed-bg" style="background-image: url(assets/images/topbg.jpg);"></div>
-                <div class="page-title-wrapper text-center">
-                    <div class="col-md-12 col-sm-12 col-lg-12">
-                        <div class="page-title-inner">
-                            <h1 itemprop="headline">Recover your Password</h1>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+<div class="card">
+    <h2>Forgot Password</h2>
+    <p>Enter your username</p>
 
-        <div class="bread-crumbs-wrapper">
-            <div class="container">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.php" title="" itemprop="url">Home</a></li>
-                    <li class="breadcrumb-item active">Recover your Password </li>
-                </ol>
-            </div>
-        </div>
+    <?php if ($error): ?>
+        <div class="error"><?= $error ?></div>
+    <?php endif; ?>
 
-        <section>
-            <div class="block top-padd30">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md-12 col-sm-12 col-lg-12">
-                            <div class="login-register-wrapper">
-                                <div class="row">
-                                    <div class="col-md-12 col-sm-12 col-lg-12">
-                                        <div class="sign-popup-wrapper brd-rd5">
-                                            <div class="sign-popup-inner brd-rd5">
-                                                <div class="sign-popup-title text-center">
-                                                    <h4 itemprop="headline">Recover your Password</h4>
-                                            
-                                                </div>
-                                
-                                             
-                                                <form class="sign-form" method="post">
-                                                    <div class="row">
-<!--Email Id-->
-                        <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12">
-                        <input class="brd-rd3" type="email" placeholder="Registered Email id" name="email" id="email" required="true">
-                                                        </div>
+    <form method="post">
+        <input type="text" name="username" placeholder="Username" required>
+        <button type="submit" name="submit">Continue</button>
+    </form>
 
+    <div class="back">
+        <a href="login.php">← Back to Login</a>
+    </div>
+</div>
 
-<!--Mobile Number-->
-                        <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12">
-                        <input class="brd-rd3" type="text" placeholder="Registered Mobile Number" name="contactno" maxlength="10" pattern="[0-9]{10}" required="true">
-                                                        </div>
-                                                     
-                                                        <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12">
-                                                            <button class="red-bg brd-rd3" type="submit" name="changesubmit">Submit</button>
-                                                        </div>
-                                               
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                          
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-          <?php include_once('includes/footer.php');
-include_once('includes/signin.php');
-include_once('includes/signup.php');
-      ?>
-    </main><!-- Main Wrapper -->
-
-    <script src="assets/js/jquery.min.js"></script>
-    <script src="assets/js/bootstrap.min.js"></script>
-    <script src="assets/js/plugins.js"></script>
-    <script src="assets/js/main.js"></script>
-</body>	
-
+</body>
 </html>
