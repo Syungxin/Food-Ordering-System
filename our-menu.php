@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once "includes/dbconnection.php";
-
+$s3_base = "https://csc3074-food-images.s3.ap-southeast-2.amazonaws.com/Cloud%20Food%20Image/";
 $cartCount = array_sum($_SESSION['cart'] ?? []);
 ?>
 <!DOCTYPE html>
@@ -37,9 +37,10 @@ while ($row = mysqli_fetch_assoc($result)) {
 ?>
     <div class="col-md-4 mb-4">
         <div class="card">
-		<img src="assets/images/cloud-food/<?php echo htmlspecialchars($row['Image']); ?>" 
-     		     class="card-img-top food-img"
-		     onerror="this.src='assets/images/no-image.png';">
+		<img src="<?php echo $s3_base . htmlspecialchars($row['Image']); ?>" 
+            class="card-img-top food-img" 
+            alt="<?php echo htmlspecialchars($row['ItemName']); ?>">
+ 
 
             <div class="card-body text-center">
                 <h5><?php echo htmlspecialchars($row['ItemName']); ?></h5>
