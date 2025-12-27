@@ -2,41 +2,42 @@
 session_start();
 require_once "includes/dbconnection.php";
 
+// Safety checks
 if (empty($_SESSION['cart']) || empty($_POST['address'])) {
     header("Location: cart.php");
     exit();
 }
 
-$address = mysqli_real_escape_string($con, $_POST['address']);
-$userId = $_SESSION['uid'] ?? 0; // if you have login
+$address = mysqli_real_escape_string($conn, $_POST['address']);
+$userId = $_SESSION['uid'] ?? 0;
 
-// 1️⃣ Insert order
-$query = mysqli_query($con, "
+// Insert order
+$query = mysqli_query($conn, "
     INSERT INTO orders (user_id, address, order_date)
     VALUES ('$userId', '$address', NOW())
 ");
 
 if (!$query) {
-    die("Order failed");
+    die("Order insert failed: " . mysqli_error($conn));
 }
 
-// 2️⃣ Get order ID
-$order_id = mysqli_insert_id($con);
+// Get generated order ID
+$order_id = mysqli_insert_id($conn);
 
-// 3️⃣ Insert order items
+// Insert each cart item
 foreach ($_SESSION['cart'] as $foodId => $qty) {
-    mysqli_query($con, "
+    mysqli_query($conn, "
         INSERT INTO order_items (order_id, food_id, quantity)
         VALUES ('$order_id', '$foodId', '$qty')
     ");
 }
 
-// 4️⃣ Clear cart
+// Clear cart after successful order
 unset($_SESSION['cart']);
 
-// 5️⃣ Store order ID in session
+// Store order ID for success page
 $_SESSION['order_id'] = $order_id;
 
-// 6️⃣ Redirect
+// Redirect to success page
 header("Location: success.php");
 exit();
