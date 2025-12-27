@@ -1,5 +1,8 @@
 <?php
-$order = $_GET['order'] ?? '';
+session_start();
+
+$order = $_SESSION['order_id'] ?? '';
+unset($_SESSION['order_id']);
 ?>
 <!DOCTYPE html>
 <html>

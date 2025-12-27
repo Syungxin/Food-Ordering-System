@@ -35,7 +35,7 @@ if (empty($_SESSION['cart'])) {
         </tbody>
     </table>
 
-    <form method="post" action="success.php">
+    <form method="post" action="place-order.php">
         <div class="form-group">
             <label>Delivery Address</label>
             <textarea name="address" class="form-control" required></textarea>
