@@ -2,42 +2,32 @@
 session_start();
 require_once "includes/dbconnection.php";
 
-if (empty($_SESSION['cart']) || empty($_POST['address'])) {
+if (empty($_SESSION['cart'])) {
     header("Location: cart.php");
     exit();
 }
 
-$address = mysqli_real_escape_string($conn, $_POST['address']);
-$userId = $_SESSION['uid'] ?? 0;
+$userId = $_SESSION['uid'] ?? 'GUEST';
 
-// 1️⃣ Insert into tblorders
-mysqli_query($conn, "
-    INSERT INTO tblorders (UserID, OrderDate, OrderStatus)
-    VALUES ('$userId', NOW(), 'Pending')
-");
+// Generate unique order number
+$orderNumber = 'ORD' . time();
 
-$order_id = mysqli_insert_id($conn);
-
-// 2️⃣ Insert address
-mysqli_query($conn, "
-    INSERT INTO tblorderaddresses (OrderId, Address)
-    VALUES ('$order_id', '$address')
-");
-
-// 3️⃣ Insert food items
 foreach ($_SESSION['cart'] as $foodId => $qty) {
+
     mysqli_query($conn, "
-        INSERT INTO tblfoodtracking (OrderId, FoodId, Quantity)
-        VALUES ('$order_id', '$foodId', '$qty')
+        INSERT INTO tblorders 
+        (UserId, FoodId, FoodQty, IsOrderPlaced, OrderNumber)
+        VALUES 
+        ('$userId', '$foodId', '$qty', 1, '$orderNumber')
     ");
 }
 
-// 4️⃣ Clear cart
+// Clear cart
 unset($_SESSION['cart']);
 
-// 5️⃣ Store order ID for success page
-$_SESSION['order_id'] = $order_id;
+// Store order number for success page
+$_SESSION['order_id'] = $orderNumber;
 
-// 6️⃣ Redirect
+// Redirect to success page
 header("Location: success.php");
 exit();
